@@ -23,14 +23,16 @@ vim.opt.signcolumn = "yes"
 vim.opt.expandtab = true
 vim.opt.shiftwidth = 4
 vim.opt.tabstop = 4
+vim.opt.colorcolumn = "81"
+
 
 vim.opt.list = true
 vim.opt.listchars = {
-    space = "·", -- kropka dla spacji
-    tab = "→ ", -- strzałka dla tabów
-    trail = "·", -- spacje na końcu linii
-    extends = "›", -- linia za szeroka w prawo
-    precedes = "‹", -- linia za szeroka w lewo
+    space = "·",
+    tab = "→ ",
+    trail = "·",
+    extends = "›",
+    precedes = "‹",
 }
 
 -- plugins
