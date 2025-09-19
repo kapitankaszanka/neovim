@@ -77,6 +77,23 @@ require("lazy").setup({
         dependencies = { "nvim-lua/plenary.nvim", "nvim-tree/nvim-web-devicons", "MunifTanjim/nui.nvim" },
     },
     { "akinsho/toggleterm.nvim", version = "*", config = true },
+
+    { -- keep cursor centered without remaps
+        "arnamak/stay-centered.nvim",
+        lazy = false,
+        opts = {
+            enabled = true,
+            allow_scroll_move = true,
+            disable_on_mouse = true,
+            skip_filetypes = {
+                "neo-tree",
+                "TelescopePrompt",
+                "toggleterm",
+                "help",
+                "lazy"
+            },
+        },
+    },
 })
 
 -- telescope
@@ -125,7 +142,7 @@ cmp.setup({
 local mason = require("mason")
 local mason_lsp = require("mason-lspconfig")
 mason.setup()
-mason_lsp.setup({ ensure_installed = { "basedpyright", "ruff", "lua_ls", "ansiblels", "gopls", "clangd" } })
+mason_lsp.setup({ ensure_installed = { "basedpyright", "ruff", "lua_ls", "gopls", "clangd" } })
 
 local on_attach = function(_, bufnr)
     local nmap = function(keys, func, desc) vim.keymap.set("n", keys, func, { buffer = bufnr, desc = desc }) end
@@ -163,12 +180,6 @@ vim.lsp.config('lua_ls', {
 })
 vim.lsp.enable('lua_ls')
 
-vim.lsp.config('ansiblels', {
-    on_attach = on_attach,
-    capabilities = capabilities,
-})
-vim.lsp.enable('ansiblels')
-
 vim.lsp.config('gopls', {
     on_attach = on_attach,
     capabilities = capabilities,
@@ -205,40 +216,6 @@ map({ "n", "v" }, "<leader>y", [["+y]], { desc = "Yank to system clipboard" })
 map("n", "<leader>Y", [["+Y]], { desc = "Yank line to system clipboard" })
 map("n", "<leader>p", [["+p]], { desc = "Paste from system clipboard" })
 map("n", "<Esc>u", "<cmd>nohlsearch<CR>", { desc = "Clear search highlight" })
-
--- hjkl with count-aware centering (centers once after the move)
-local function with_zz(key)
-    return function()
-        local c = vim.v.count1
-        return (c > 1 and tostring(c) or "") .. key .. "zz"
-    end
-end
-map("n", "h", with_zz("h"), { expr = true, desc = "Left + center" })
-map("n", "j", with_zz("j"), { expr = true, desc = "Down + center" })
-map("n", "k", with_zz("k"), { expr = true, desc = "Up + center" })
-map("n", "l", with_zz("l"), { expr = true, desc = "Right + center" })
-
--- search motions
-map("n", "n", "nzzzv", { desc = "Next search result centered" })
-map("n", "N", "Nzzzv", { desc = "Prev search result centered" })
-map("n", "*", "*zzzv", { desc = "Search word forward centered" })
-map("n", "#", "#zzzv", { desc = "Search word backward centered" })
-map("n", "g*", "g*zzzv", { desc = "Search partial word forward centered" })
-map("n", "g#", "g#zzzv", { desc = "Search partial word backward centered" })
-
--- file motions
-map("n", "gg", "ggzz", { desc = "Top of file centered" })
-map("n", "G", "Gzz", { desc = "Bottom of file centered" })
-
--- paragraph motions
-map("n", "{", "{zz", { desc = "Prev paragraph centered" })
-map("n", "}", "}zz", { desc = "Next paragraph centered" })
-
--- section/function motions
-map("n", "[[", "[[zz", { desc = "Prev section centered" })
-map("n", "]]", "]]zz", { desc = "Next section centered" })
-map("n", "[]", "[]zz", { desc = "Prev function centered" })
-map("n", "][", "][zz", { desc = "Next function centered" })
 
 -- prefer .venv python if present
 local function prefer_project_venv()
