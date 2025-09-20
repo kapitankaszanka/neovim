@@ -242,7 +242,7 @@ prefer_project_venv()
 -- CUSTOM REMAPS
 local map = vim.keymap.set
 -- copy
-map("n", "<leader>pv", vim.cmd.Ex)
+map("n", "<leader>pv", function() vim.cmd("tabnew | Ex") end)
 map({ "n", "v" }, "<leader>y", [["+y]], { desc = "Yank to system clipboard" })
 map("n", "<leader>Y", [["+Y]], { desc = "Yank line to system clipboard" })
 map("n", "<Esc>u", "<cmd>nohlsearch<CR>", { desc = "Clear search highlight" })
