@@ -175,6 +175,7 @@ vim.lsp.config('basedpyright', {
                 autoImportCompletions = true,
                 useLibraryCodeForTypes = true,
                 diagnosticMode = "openFilesOnly",
+                typeCheckingMode = "standard",
             }
         }
     }
@@ -190,8 +191,11 @@ vim.lsp.config('ruff', {
 })
 vim.lsp.enable('ruff')
 
-vim.lsp.config('lua_ls',
-    { capabilities = capabilities, on_attach = on_attach, settings = { Lua = { diagnostics = { globals = { "vim" } } } } })
+vim.lsp.config('lua_ls', {
+    capabilities = capabilities,
+    on_attach = on_attach,
+    settings = { Lua = { diagnostics = { globals = { "vim" } } } }
+})
 vim.lsp.enable('lua_ls')
 
 vim.lsp.config('gopls', { capabilities = capabilities, on_attach = on_attach })
@@ -250,22 +254,22 @@ map("x", "<leader>p", "\"_dP")
 -- move
 map("v", "K", ":m '<-2<CR>gv=gv")
 map("v", "J", ":m '>+1<CR>gv=gv")
+map({ "v", "x" }, ">", ">gv", { desc = "Indent right (keep selection)" })
+map({ "v", "x" }, "<", "<gv", { desc = "Indent left (keep selection)" })
 -- terminal
+map("t", "<C-t>", [[<C-\><C-n>]], { desc = "Turn off terminal mode" })
 map("n", "<leader>tt", "<cmd>ToggleTerm direction=float<CR>", { desc = "Toggle terminal (float)" })
 map("n", "<leader>th", "<cmd>ToggleTerm direction=horizontal size=12<CR>", { desc = "Terminal horizontal" })
 map("n", "<leader>tv", "<cmd>ToggleTerm direction=vertical size=80<CR>", { desc = "Terminal vertical" })
--- lazygit
--- -- LazyGit integration with ToggleTerm
+-- lazygit via ToggleTerm
 local Terminal = require("toggleterm.terminal").Terminal
 local lazygit_term -- singleton
 
--- Check if we are inside a Git repository
 local function in_git_repo()
     local ok = vim.fn.systemlist("git rev-parse --is-inside-work-tree")[1]
     return ok == "true"
 end
 
--- Toggle LazyGit in a floating terminal
 local function toggle_lazygit()
     if vim.fn.executable("lazygit") == 0 then
         vim.notify("`lazygit` not found in PATH. Please install it and try again.", vim.log.levels.ERROR)
@@ -280,7 +284,7 @@ local function toggle_lazygit()
             cmd = "lazygit",
             direction = "float",
             hidden = true,
-            dir = "git_dir", -- start at the repository root
+            dir = "git_dir",
         })
     end
     lazygit_term:toggle()
