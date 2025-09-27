@@ -10,24 +10,53 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 -- basic options
-vim.g.mapleader = " "
-vim.opt.number = true
+vim.g.mapleader        = " "
+vim.opt.number         = true
 vim.opt.relativenumber = true
-vim.opt.mouse = "a"
-vim.opt.ignorecase = true
-vim.opt.smartcase = true
-vim.opt.termguicolors = true
-vim.opt.updatetime = 200
-vim.opt.signcolumn = "yes"
-vim.opt.expandtab = true
-vim.opt.shiftwidth = 4
-vim.opt.tabstop = 4
-vim.opt.colorcolumn = "80"
-vim.opt.swapfile = false
-vim.opt.backup = false
-vim.opt.writebackup = false
-vim.opt.list = true
-vim.opt.listchars = { space = "·", tab = "→ ", trail = "·", extends = "›", precedes = "‹" }
+vim.opt.mouse          = "a"
+vim.opt.ignorecase     = true
+vim.opt.smartcase      = true
+vim.opt.termguicolors  = true
+vim.opt.updatetime     = 200
+vim.opt.signcolumn     = "yes"
+vim.opt.expandtab      = true
+vim.opt.shiftwidth     = 4
+vim.opt.tabstop        = 4
+vim.opt.colorcolumn    = "80"
+vim.opt.swapfile       = false
+vim.opt.backup         = false
+vim.opt.writebackup    = false
+vim.opt.list           = true
+vim.opt.clipboard      = "unnamedplus"
+vim.opt.listchars      = { space = "·", tab = "→ ", trail = "·", extends = "›", precedes = "‹" }
+
+-- folding settings
+vim.o.foldcolumn       = "1" -- gutter with fold markers
+vim.o.foldlevel        = 99  -- open everything by default
+vim.o.foldlevelstart   = 99
+vim.o.foldenable       = true
+vim.o.foldmethod       = "expr"
+vim.o.foldexpr         = "nvim_treesitter#foldexpr()"
+
+-- split
+vim.opt.splitright     = true
+vim.opt.splitbelow     = true
+
+-- TABLINE (real Vim tabs)
+vim.opt.showtabline    = 2 -- always show the tabline; default shows numbers 1..N
+-- Alt+1..Alt+9 -> go to specific tab; Alt+0 -> last tab
+for i = 1, 9 do
+    vim.keymap.set("n", "<M-" .. i .. ">", function() vim.cmd("tabnext " .. i) end,
+        { desc = "Tab " .. i })
+end
+vim.keymap.set("n", "<M-0>", "<cmd>tablast<CR>", { desc = "Last tab" })
+-- Handy tab management shortcuts
+vim.keymap.set("n", "<leader>tn", "<cmd>tabnew<CR>", { desc = "New tab" })
+vim.keymap.set("n", "<leader>to", "<cmd>tabonly<CR>", { desc = "Close other tabs" })
+vim.keymap.set("n", "<leader>tx", "<cmd>tabclose<CR>", { desc = "Close current tab" })
+vim.keymap.set("n", "<leader>ts", "<cmd>tab split<CR>", { desc = "Current window to new tab" })
+vim.keymap.set("n", "<leader>tH", "<cmd>tabmove -1<CR>", { desc = "Move tab left" })
+vim.keymap.set("n", "<leader>tL", "<cmd>tabmove +1<CR>", { desc = "Move tab right" })
 
 -- plugins
 require("lazy").setup({
@@ -41,19 +70,37 @@ require("lazy").setup({
     { "nvim-lua/plenary.nvim" },
     { "nvim-telescope/telescope.nvim", tag = "0.1.5" },
     { "lewis6991/gitsigns.nvim",       config = true },
-    { "nvim-lualine/lualine.nvim",     config = function() require("lualine").setup({ options = { theme = "tokyonight" } }) end },
-    { "folke/which-key.nvim",          event = "VeryLazy",                                                                      config = true },
+    {
+        "nvim-lualine/lualine.nvim",
+        config = function()
+            -- lualine statusline (tabline is native and already shows numbers)
+            require("lualine").setup({ options = { theme = "tokyonight" } })
+        end
+    },
+    { "folke/which-key.nvim",             event = "VeryLazy", config = true },
+
+    -- treesitter
     {
         "nvim-treesitter/nvim-treesitter",
         build = ":TSUpdate",
         config = function()
             require("nvim-treesitter.configs").setup({
-                ensure_installed = { "python", "lua", "vim", "vimdoc", "bash", "json", "toml", "yaml" },
+                ensure_installed = {
+                    "python",
+                    "lua",
+                    "vim",
+                    "vimdoc",
+                    "bash",
+                    "json",
+                    "toml",
+                    "yaml"
+                },
                 highlight = { enable = true },
                 indent = { enable = true },
             })
         end
     },
+
     { "williamboman/mason.nvim",          config = true },
     { "williamboman/mason-lspconfig.nvim" },
     { "neovim/nvim-lspconfig" },
@@ -62,10 +109,11 @@ require("lazy").setup({
     { "hrsh7th/cmp-buffer" },
     { "hrsh7th/cmp-path" },
     { "saadparwaiz1/cmp_luasnip" },
-    { "L3MON4D3/LuaSnip",                 version = "v2.*", build = "make install_jsregexp" },
+    { "L3MON4D3/LuaSnip",                 version = "v2.*",   build = "make install_jsregexp" },
     { "onsails/lspkind.nvim" },
     { "stevearc/conform.nvim" },
-    { "akinsho/toggleterm.nvim",          version = "*",    config = true },
+    { "akinsho/toggleterm.nvim",          version = "*",      config = true },
+
     {
         "arnamak/stay-centered.nvim",
         lazy = false,
@@ -75,6 +123,52 @@ require("lazy").setup({
             disable_on_mouse = true,
             skip_filetypes = { "TelescopePrompt", "toggleterm", "help", "lazy" },
         },
+    },
+
+    { "kevinhwang91/promise-async" },
+    {
+        "kevinhwang91/nvim-ufo",
+        event = "VeryLazy",
+        dependencies = { "kevinhwang91/promise-async" },
+        config = function()
+            -- default: use treesitter, then indent
+            require("ufo").setup({
+                provider_selector = function(_, _, _)
+                    return { "treesitter", "indent" }
+                end,
+                -- custom fold text
+                fold_virt_text_handler = function(virtText, lnum, endLnum, width, truncate)
+                    local newVirtText = {}
+                    local suffix = ("  ↙ %d lines "):format(endLnum - lnum)
+                    local sufWidth = vim.fn.strdisplaywidth(suffix)
+                    local targetWidth = width - sufWidth
+                    local curWidth = 0
+                    for _, chunk in ipairs(virtText) do
+                        local txt, hl = chunk[1], chunk[2]
+                        local chunkWidth = vim.fn.strdisplaywidth(txt)
+                        if targetWidth > curWidth + chunkWidth then
+                            table.insert(newVirtText, chunk)
+                            curWidth = curWidth + chunkWidth
+                        else
+                            txt = truncate(txt, targetWidth - curWidth)
+                            table.insert(newVirtText, { txt, hl })
+                            break
+                        end
+                    end
+                    table.insert(newVirtText, { suffix, "Comment" })
+                    return newVirtText
+                end,
+            })
+            -- shortcuts
+            vim.keymap.set("n", "zR", require("ufo").openAllFolds, { desc = "Folds: open all" })
+            vim.keymap.set("n", "zM", require("ufo").closeAllFolds, { desc = "Folds: close all" })
+
+            -- peek folded lines (fallback to LSP hover)
+            vim.keymap.set("n", "zp", function()
+                local winid = require("ufo").peekFoldedLinesUnderCursor()
+                if not winid then vim.lsp.buf.hover() end
+            end, { desc = "Fold: peek (fallback hover)" })
+        end,
     },
 })
 
@@ -87,12 +181,15 @@ vim.keymap.set("n", "<leader>fh", tb.help_tags, { desc = "Help tags" })
 
 -- nvim-cmp
 local cmp = require("cmp")
+local capabilities = require("cmp_nvim_lsp").default_capabilities()
 local luasnip = require("luasnip")
 local lspkind = require("lspkind")
 
+capabilities.offsetEncoding = { "utf-8" }
+
 cmp.setup({
     preselect = cmp.PreselectMode.None,
-    -- ważne: 'noselect' zamiast 'noinsert'
+    -- important: 'noselect' instead of 'noinsert'
     completion = { completeopt = "menu,menuone,noselect" },
 
     snippet = { expand = function(args) luasnip.lsp_expand(args.body) end },
@@ -102,14 +199,13 @@ cmp.setup({
         ["<C-f>"] = cmp.mapping.scroll_docs(4),
         ["<C-Space>"] = cmp.mapping.complete(),
 
-        -- <CR>: tylko jeśli coś JEST wybrane; inaczej newline
+        -- <CR>: only confirm if something is selected; otherwise newline
         ["<CR>"] = cmp.mapping(function(fallback)
             if cmp.visible() then
                 local entry = cmp.get_selected_entry()
                 if entry then
                     cmp.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = false })
                 else
-                    -- zamknij menu i wstaw normalny Enter
                     cmp.abort()
                     fallback()
                 end
@@ -198,7 +294,19 @@ vim.lsp.config('lua_ls', {
 })
 vim.lsp.enable('lua_ls')
 
-vim.lsp.config('gopls', { capabilities = capabilities, on_attach = on_attach })
+vim.lsp.config('gopls', {
+    capabilities = capabilities,
+    on_attach = on_attach,
+    settings = {
+        gopls = {
+            analyses = {
+                unusedparams = true,
+                shadow = true,
+            },
+            staticcheck = true,
+        },
+    },
+})
 vim.lsp.enable('gopls')
 
 vim.lsp.config('clangd', { capabilities = capabilities, on_attach = on_attach })
@@ -233,7 +341,7 @@ vim.keymap.set("n", "<leader>dt", function()
     vim.diagnostic.config({ virtual_text = not cfg.virtual_text })
 end, { desc = "Diagnostics: toggle virtual text" })
 
--- prefer .venv python if present
+-- prefer project-local Python venv if present
 local function prefer_project_venv()
     local venv = vim.fn.finddir('.venv', vim.fn.getcwd() .. ';')
     if venv ~= '' then
@@ -245,22 +353,25 @@ prefer_project_venv()
 
 -- CUSTOM REMAPS
 local map = vim.keymap.set
+-- exit insert mode
+map("i", "hl", "<Esc>")
 -- copy
 map("n", "<leader>pv", function() vim.cmd("tabnew | Ex") end)
 map({ "n", "v" }, "<leader>y", [["+y]], { desc = "Yank to system clipboard" })
 map("n", "<leader>Y", [["+Y]], { desc = "Yank line to system clipboard" })
 map("n", "<Esc>u", "<cmd>nohlsearch<CR>", { desc = "Clear search highlight" })
 map("x", "<leader>p", "\"_dP")
--- move
+-- move lines
 map("v", "K", ":m '<-2<CR>gv=gv")
 map("v", "J", ":m '>+1<CR>gv=gv")
 map({ "v", "x" }, ">", ">gv", { desc = "Indent right (keep selection)" })
 map({ "v", "x" }, "<", "<gv", { desc = "Indent left (keep selection)" })
 -- terminal
-map("t", "<C-t>", [[<C-\><C-n>]], { desc = "Turn off terminal mode" })
+map("t", "hl", [[<C-\><C-n>]], { desc = "Exit terminal mode" })
 map("n", "<leader>tt", "<cmd>ToggleTerm direction=float<CR>", { desc = "Toggle terminal (float)" })
 map("n", "<leader>th", "<cmd>ToggleTerm direction=horizontal size=12<CR>", { desc = "Terminal horizontal" })
 map("n", "<leader>tv", "<cmd>ToggleTerm direction=vertical size=80<CR>", { desc = "Terminal vertical" })
+
 -- lazygit via ToggleTerm
 local Terminal = require("toggleterm.terminal").Terminal
 local lazygit_term -- singleton
