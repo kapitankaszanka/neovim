@@ -68,8 +68,9 @@ require("lazy").setup({
         end
     },
     { "nvim-lua/plenary.nvim" },
-    { "nvim-telescope/telescope.nvim", tag = "0.1.5" },
-    { "lewis6991/gitsigns.nvim",       config = true },
+    { "nvim-telescope/telescope.nvim" },
+    { rocks = { enabled = false } },
+    { "lewis6991/gitsigns.nvim",      config = true },
     {
         "nvim-lualine/lualine.nvim",
         config = function()
