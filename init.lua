@@ -27,7 +27,6 @@ vim.opt.swapfile       = false
 vim.opt.backup         = false
 vim.opt.writebackup    = false
 vim.opt.list           = true
-vim.opt.clipboard      = "unnamedplus"
 vim.opt.listchars      = { space = "·", tab = "→ ", trail = "·", extends = "›", precedes = "‹" }
 
 -- folding settings
@@ -69,7 +68,6 @@ require("lazy").setup({
     },
     { "nvim-lua/plenary.nvim" },
     { "nvim-telescope/telescope.nvim" },
-    { rocks = { enabled = false } },
     { "lewis6991/gitsigns.nvim",      config = true },
     {
         "nvim-lualine/lualine.nvim",
@@ -354,10 +352,10 @@ prefer_project_venv()
 
 -- CUSTOM REMAPS
 local map = vim.keymap.set
--- exit insert mode
-map("i", "hl", "<Esc>")
--- copy
+-- change mode
+map("i", "jk", "<Esc>")
 map("n", "<leader>pv", function() vim.cmd("tabnew | Ex") end)
+-- copy
 map({ "n", "v" }, "<leader>y", [["+y]], { desc = "Yank to system clipboard" })
 map("n", "<leader>Y", [["+Y]], { desc = "Yank line to system clipboard" })
 map("n", "<Esc>u", "<cmd>nohlsearch<CR>", { desc = "Clear search highlight" })
@@ -368,7 +366,7 @@ map("v", "J", ":m '>+1<CR>gv=gv")
 map({ "v", "x" }, ">", ">gv", { desc = "Indent right (keep selection)" })
 map({ "v", "x" }, "<", "<gv", { desc = "Indent left (keep selection)" })
 -- terminal
-map("t", "hl", [[<C-\><C-n>]], { desc = "Exit terminal mode" })
+map("t", "zx", [[<C-\><C-n>]], { desc = "Exit terminal mode" })
 map("n", "<leader>tt", "<cmd>ToggleTerm direction=float<CR>", { desc = "Toggle terminal (float)" })
 map("n", "<leader>th", "<cmd>ToggleTerm direction=horizontal size=12<CR>", { desc = "Terminal horizontal" })
 map("n", "<leader>tv", "<cmd>ToggleTerm direction=vertical size=80<CR>", { desc = "Terminal vertical" })
