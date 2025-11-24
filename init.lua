@@ -101,6 +101,7 @@ require("lazy").setup({
             vim.cmd.colorscheme("tokyonight-night")
         end
     },
+    { "b0o/SchemaStore.nvim",         version = false },
     { "nvim-lua/plenary.nvim" },
     { "nvim-telescope/telescope.nvim" },
     { "lewis6991/gitsigns.nvim",      config = true },
@@ -134,6 +135,22 @@ require("lazy").setup({
             })
         end
     },
+    {
+        "nvim-treesitter/nvim-treesitter-context",
+        opts = {
+            enable = true,
+            max_lines = 3,
+            trim_scope = "outer",
+            mode = "cursor",
+            separator = "─",
+            multiline_threshold = 20,
+        },
+        keys = {
+            { "<leader>uc", function() require("treesitter-context").toggle() end,        desc = "Toggle sticky context" },
+            { "[c",         function() require("treesitter-context").go_to_context() end, desc = "Jump to context" },
+        },
+    },
+
 
     { "williamboman/mason.nvim",          config = true },
     { "williamboman/mason-lspconfig.nvim" },
@@ -277,7 +294,17 @@ cmp.setup({
 local mason = require("mason")
 local mason_lsp = require("mason-lspconfig")
 mason.setup()
-mason_lsp.setup({ ensure_installed = { "basedpyright", "ruff", "lua_ls", "gopls", "clangd" } })
+mason_lsp.setup(
+    {
+        ensure_installed = {
+            "basedpyright",
+            "ruff",
+            "lua_ls",
+            "gopls",
+            "clangd",
+            "jsonls"
+        }
+    })
 
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
 local on_attach = function(_, bufnr)
@@ -342,6 +369,19 @@ vim.lsp.enable('gopls')
 
 vim.lsp.config('clangd', { capabilities = capabilities, on_attach = on_attach })
 vim.lsp.enable('clangd')
+
+vim.lsp.config('jsonls', {
+    capabilities = capabilities,
+    on_attach = on_attach,
+    settings = {
+        json = {
+            schemas = require('schemastore').json.schemas(),
+            validate = { enable = true },
+            format = { enable = true },
+        },
+    },
+})
+vim.lsp.enable('jsonls')
 
 -- formatting
 require("conform").setup({
