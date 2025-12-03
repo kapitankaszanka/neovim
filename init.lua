@@ -373,7 +373,6 @@ vim.lsp.config('terraformls', {
             formatting = { enable = true },
         },
     },
-    filetypes = { "terraform", "tf", "tfvars", "hcl" },
 })
 vim.lsp.enable('terraformls')
 
