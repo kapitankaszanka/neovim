@@ -303,6 +303,7 @@ mason_lsp.setup(
         ensure_installed = {
             "basedpyright",
             "ruff",
+            "lua_ls",
             "gopls",
             "clangd",
             "jsonls",
@@ -348,6 +349,13 @@ vim.lsp.config('ruff', {
     end,
 })
 vim.lsp.enable('ruff')
+
+vim.lsp.config('lua_ls', {
+    capabilities = capabilities,
+    on_attach = on_attach,
+    settings = { Lua = { diagnostics = { globals = { "vim" } } } }
+})
+vim.lsp.enable('lua_ls')
 
 vim.lsp.config('gopls', {
     capabilities = capabilities,
