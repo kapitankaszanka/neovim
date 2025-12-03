@@ -302,7 +302,8 @@ mason_lsp.setup(
             "lua_ls",
             "gopls",
             "clangd",
-            "jsonls"
+            "jsonls",
+            "terraformls",
         }
     })
 
@@ -367,6 +368,19 @@ vim.lsp.config('gopls', {
 })
 vim.lsp.enable('gopls')
 
+vim.lsp.config('terraformls', {
+    capabilities = capabilities,
+    on_attach = on_attach,
+    settings = {
+        terraform = {
+            trace = { server = "off" },
+            formatting = { enable = true },
+        },
+    },
+    filetypes = { "terraform", "tf", "hcl" },
+})
+vim.lsp.enable('terraformls')
+
 vim.lsp.config('clangd', { capabilities = capabilities, on_attach = on_attach })
 vim.lsp.enable('clangd')
 
@@ -380,11 +394,17 @@ vim.lsp.config('jsonls', {
             format = { enable = true },
         },
     },
+    filetypes = { "json", "tfstate" },
 })
 vim.lsp.enable('jsonls')
 
 -- formatting
 require("conform").setup({
+    formatters = {
+        black = {
+            prepend_args = { "--line-length", "79" }
+        },
+    },
     formatters_by_ft = { python = { "isort", "black" }, lua = { "stylua" } },
     format_on_save = function(bufnr)
         if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then return end
