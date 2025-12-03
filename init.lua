@@ -128,7 +128,7 @@ require("lazy").setup({
                     "bash",
                     "json",
                     "toml",
-                    "yaml"
+                    "yaml",
                 },
                 highlight = { enable = true },
                 indent = { enable = true },
@@ -210,7 +210,11 @@ require("lazy").setup({
                     return newVirtText
                 end,
             })
-            -- shortcuts
+            -- shortcuts tree folds
+            -- zR open all
+            -- zM close all
+            -- zo open one
+            -- zc close one
             vim.keymap.set("n", "zR", require("ufo").openAllFolds, { desc = "Folds: open all" })
             vim.keymap.set("n", "zM", require("ufo").closeAllFolds, { desc = "Folds: close all" })
 
@@ -299,7 +303,6 @@ mason_lsp.setup(
         ensure_installed = {
             "basedpyright",
             "ruff",
-            "lua_ls",
             "gopls",
             "clangd",
             "jsonls",
@@ -346,13 +349,6 @@ vim.lsp.config('ruff', {
 })
 vim.lsp.enable('ruff')
 
-vim.lsp.config('lua_ls', {
-    capabilities = capabilities,
-    on_attach = on_attach,
-    settings = { Lua = { diagnostics = { globals = { "vim" } } } }
-})
-vim.lsp.enable('lua_ls')
-
 vim.lsp.config('gopls', {
     capabilities = capabilities,
     on_attach = on_attach,
@@ -377,7 +373,7 @@ vim.lsp.config('terraformls', {
             formatting = { enable = true },
         },
     },
-    filetypes = { "terraform", "tf", "hcl" },
+    filetypes = { "terraform", "tf", "tfvars", "hcl" },
 })
 vim.lsp.enable('terraformls')
 
