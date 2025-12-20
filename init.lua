@@ -101,10 +101,15 @@ require("lazy").setup({
             vim.cmd.colorscheme("tokyonight-night")
         end
     },
+
     { "b0o/SchemaStore.nvim",         version = false },
+
     { "nvim-lua/plenary.nvim" },
+
     { "nvim-telescope/telescope.nvim" },
+
     { "lewis6991/gitsigns.nvim",      config = true },
+
     {
         "nvim-lualine/lualine.nvim",
         config = function()
@@ -112,7 +117,18 @@ require("lazy").setup({
             require("lualine").setup({ options = { theme = "tokyonight" } })
         end
     },
+
     { "folke/which-key.nvim",             event = "VeryLazy", config = true },
+
+    {
+        "folke/lazydev.nvim",
+        ft = "lua",
+        opts = {
+            library = {
+                { path = "luvit-meta/library", words = { "vim%.uv" } },
+            },
+        },
+    },
 
     -- treesitter
     {
@@ -510,4 +526,3 @@ vim.keymap.set("n", "<leader>mp", function()
         peek.open()
     end
 end, { desc = "Markdown: toggle preview (peek)" })
-
