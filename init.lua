@@ -136,6 +136,18 @@ require("lazy").setup({
         end
     },
     {
+        "toppair/peek.nvim",
+        ft = "markdown",
+        build = "deno task --quiet build:fast",
+        opts = {
+            theme = "dark",
+            app = "browser",
+            filetype = { "markdown" },
+            throttle_at = 200000,
+            throttle_time = "auto",
+        },
+    },
+    {
         "nvim-treesitter/nvim-treesitter-context",
         opts = {
             enable = true,
@@ -303,7 +315,6 @@ mason_lsp.setup(
         ensure_installed = {
             "basedpyright",
             "ruff",
-            "lua_ls",
             "gopls",
             "clangd",
             "jsonls",
@@ -349,13 +360,6 @@ vim.lsp.config('ruff', {
     end,
 })
 vim.lsp.enable('ruff')
-
-vim.lsp.config('lua_ls', {
-    capabilities = capabilities,
-    on_attach = on_attach,
-    settings = { Lua = { diagnostics = { globals = { "vim" } } } }
-})
-vim.lsp.enable('lua_ls')
 
 vim.lsp.config('gopls', {
     capabilities = capabilities,
@@ -449,7 +453,7 @@ prefer_project_venv()
 local map = vim.keymap.set
 -- change mode
 map("i", "jk", "<Esc>")
-map("n", "<leader>pv", function() vim.cmd("tabnew | Ex") end)
+map("n", "<leader>pv", function() vim.cmd("Ex") end)
 -- copy
 map({ "n", "v" }, "<leader>y", [["+y]], { desc = "Yank to system clipboard" })
 map("n", "<leader>Y", [["+Y]], { desc = "Yank line to system clipboard" })
@@ -496,3 +500,14 @@ local function toggle_lazygit()
 end
 
 vim.keymap.set("n", "<leader>gg", toggle_lazygit, { desc = "LazyGit (float)" })
+
+-- Markdown preview (peek.nvim)
+vim.keymap.set("n", "<leader>mp", function()
+    local peek = require("peek")
+    if peek.is_open() then
+        peek.close()
+    else
+        peek.open()
+    end
+end, { desc = "Markdown: toggle preview (peek)" })
+
