@@ -1,5 +1,67 @@
 -- ~/.config/nvim/init.lua
 
+-------------------------------------------------------------------------------
+-- KEYMAPS CHEATSHEET (English)
+-------------------------------------------------------------------------------
+-- [[ NAVIGATION & CORE ]]
+-- <leader>pv  : Open File Explorer (Netrw)
+-- jk          : Escape Insert Mode
+-- <Esc>u      : Clear search highlight
+-- <leader>y   : Copy to System Clipboard (Visual/Normal)
+-- <leader>Y   : Copy Line to System Clipboard
+-- <leader>p   : Paste over selection (keep buffer)
+--
+-- [[ TELESCOPE ]]
+-- <leader>ff  : Find Files
+-- <leader>fg  : Live Grep (Search text)
+-- <leader>fb  : List Buffers
+-- <leader>fh  : Help Tags
+--
+-- [[ LSP & DIAGNOSTICS ]]
+-- gd          : Go to Definition (Telescope picker)
+-- gD          : Go to Definition (open in new tab)
+-- gr          : Show References
+-- K           : Show Documentation (Hover)
+-- <leader>ca  : Code Actions
+-- <leader>rn  : Rename Symbol
+-- [d / ]d     : Prev/Next Diagnostic
+-- <leader>fd  : Format Buffer
+-- <leader>de  : Show Diagnostic at Cursor (floating window)
+-- <leader>dt  : Toggle Inline Diagnostics (virtual text)
+--
+-- [[ TABS ]]
+-- <M-1>..9    : Switch to Tab 1-9 (Alt+1..9)
+-- <M-0>       : Switch to last Tab
+-- <leader>tn  : New Tab
+-- <leader>to  : Close Other Tabs
+-- <leader>tx  : Close Current Tab
+-- <leader>ts  : Move Current Window to New Tab
+-- <leader>tH  : Move Tab Left
+-- <leader>tL  : Move Tab Right
+--
+-- [[ FOLDING (UFO) ]]
+-- zR          : Open all folds
+-- zM          : Close all folds
+-- zo          : Open one fold
+-- zc          : Close one fold
+-- zp          : Peek into fold (fallback: hover)
+--
+-- [[ TERMINAL & TOOLS ]]
+-- zx          : Exit Terminal Mode
+-- <leader>tt  : Toggle Floating Terminal
+-- <leader>th  : Horizontal Terminal
+-- <leader>tv  : Vertical Terminal
+-- <leader>gg  : Open LazyGit (float)
+-- <leader>mp  : Toggle Markdown Preview
+--
+-- [[ VISUAL MODE ]]
+-- J / K       : Move Selected Lines Down / Up
+-- > / <       : Indent Right / Left (keep selection)
+--
+-- [[ FORMATTING ]]
+-- :FormatToggle : Toggle Autoformat on Save
+-------------------------------------------------------------------------------
+
 -- lazy.nvim bootstrap
 local fn = vim.fn
 local lazypath = fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -390,8 +452,6 @@ vim.lsp.config('basedpyright', {
                 diagnosticMode = "openFilesOnly",
                 typeCheckingMode = "standard",
                 autoSearchPaths = true,
-                useLibraryCodeForTypes = true,
-                ignore = { '*' }
             }
         }
     }
