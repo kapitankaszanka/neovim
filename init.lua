@@ -4,8 +4,14 @@
 local fn = vim.fn
 local lazypath = fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
-    fn.system({ "git", "clone", "--filter=blob:none", "https://github.com/folke/lazy.nvim.git", "--branch=stable",
-        lazypath })
+    fn.system({
+        "git",
+        "clone",
+        "--filter=blob:none",
+        "https://github.com/folke/lazy.nvim.git",
+        "--branch=stable",
+        lazypath
+    })
 end
 vim.opt.rtp:prepend(lazypath)
 
@@ -94,6 +100,20 @@ vim.keymap.set("n", "<leader>tL", "<cmd>tabmove +1<CR>", { desc = "Move tab righ
 
 -- plugins
 require("lazy").setup({
+    -- Typing Tutor / Speed Tester
+    {
+        "NStefan002/speedtyper.nvim",
+        branch = "main",
+        cmd = "Speedtyper",
+        opts = {
+        },
+    },
+
+    -- Practice Vim Motions (Improve your keyboard navigation)
+    {
+        "ThePrimeagen/vim-be-good",
+        cmd = "VimBeGood",
+    },
     {
         "folke/tokyonight.nvim",
         priority = 1000,
@@ -270,7 +290,10 @@ local lspkind = require("lspkind")
 cmp.setup({
     preselect = cmp.PreselectMode.None,
     -- important: 'noselect' instead of 'noinsert'
-    completion = { completeopt = "menu,menuone,noselect" },
+    completion = {
+        completeopt = "menu,menuone,noselect",
+        max_item_count = 15,
+    },
 
     snippet = { expand = function(args) luasnip.lsp_expand(args.body) end },
 
@@ -315,10 +338,13 @@ cmp.setup({
         end, { "i", "s" }),
     }),
 
-    sources = cmp.config.sources(
-        { { name = "nvim_lsp" }, { name = "luasnip" } },
-        { { name = "path" }, { name = "buffer" } }
-    ),
+    sources = cmp.config.sources({
+        { name = "nvim_lsp", priority = 1000 },
+        { name = "luasnip",  priority = 750 },
+    }, {
+        { name = "buffer", keyword_length = 8 },
+        { name = "path" },
+    }),
     formatting = { format = lspkind.cmp_format({ mode = "symbol_text", maxwidth = 50 }) },
 })
 
@@ -335,6 +361,7 @@ mason_lsp.setup(
             "clangd",
             "jsonls",
             "terraformls",
+            "lua_ls",
         }
     })
 
@@ -362,6 +389,9 @@ vim.lsp.config('basedpyright', {
                 useLibraryCodeForTypes = true,
                 diagnosticMode = "openFilesOnly",
                 typeCheckingMode = "standard",
+                autoSearchPaths = true,
+                useLibraryCodeForTypes = true,
+                ignore = { '*' }
             }
         }
     }
@@ -420,6 +450,25 @@ vim.lsp.config('jsonls', {
     filetypes = { "json", "tfstate" },
 })
 vim.lsp.enable('jsonls')
+
+vim.lsp.config('lua_ls', {
+    capabilities = capabilities,
+    on_attach = on_attach,
+    settings = {
+        Lua = {
+            diagnostics = {
+                -- Dzięki temu LSP nie będzie krzyczeć o globalnej zmiennej 'vim'
+                globals = { 'vim' },
+            },
+            workspace = {
+                checkThirdParty = false,
+                library = vim.api.nvim_get_runtime_file("", true),
+            },
+            telemetry = { enable = false },
+        },
+    },
+})
+vim.lsp.enable('lua_ls')
 
 -- formatting
 require("conform").setup({
