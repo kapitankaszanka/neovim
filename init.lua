@@ -450,7 +450,6 @@ vim.lsp.config('basedpyright', {
                 autoImportCompletions = true,
                 useLibraryCodeForTypes = true,
                 diagnosticMode = "openFilesOnly",
-                typeCheckingMode = "standard",
                 autoSearchPaths = true,
             }
         }
@@ -532,17 +531,20 @@ vim.lsp.enable('lua_ls')
 
 -- formatting
 require("conform").setup({
-    formatters = {
-        black = {
-            prepend_args = { "--line-length", "79" }
-        },
+    formatters_by_ft = {
+        -- ruff_organize_imports replaces isort
+        -- ruff_format replaces black
+        python = { "ruff_organize_imports", "ruff_format" },
+        lua = { "stylua" },
     },
-    formatters_by_ft = { python = { "isort", "black" }, lua = { "stylua" } },
     format_on_save = function(bufnr)
-        if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then return end
-        return { lsp_fallback = true }
+        if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then
+            return
+        end
+        return { lsp_fallback = true, timeout_ms = 500 }
     end,
 })
+
 vim.api.nvim_create_user_command("FormatToggle", function()
     vim.g.disable_autoformat = not vim.g.disable_autoformat
     print("Autoformat: " .. (vim.g.disable_autoformat and "OFF" or "ON"))
