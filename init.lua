@@ -90,7 +90,7 @@ vim.opt.signcolumn     = "yes"
 vim.opt.expandtab      = true
 vim.opt.shiftwidth     = 4
 vim.opt.tabstop        = 4
-vim.opt.colorcolumn    = "80"
+vim.opt.colorcolumn    = "89"
 vim.opt.swapfile       = false
 vim.opt.backup         = false
 vim.opt.writebackup    = false
@@ -184,13 +184,18 @@ require("lazy").setup({
         end
     },
 
-    { "b0o/SchemaStore.nvim",         version = false },
+    { "b0o/SchemaStore.nvim", version = false },
 
     { "nvim-lua/plenary.nvim" },
 
-    { "nvim-telescope/telescope.nvim" },
-
-    { "lewis6991/gitsigns.nvim",      config = true },
+    {
+        'nvim-telescope/telescope.nvim',
+        dependencies = {
+            'nvim-lua/plenary.nvim',
+            { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' }
+        }
+    },
+    { "lewis6991/gitsigns.nvim", config = true },
 
     {
         "nvim-lualine/lualine.nvim",
@@ -200,7 +205,7 @@ require("lazy").setup({
         end
     },
 
-    { "folke/which-key.nvim",             event = "VeryLazy", config = true },
+    { "folke/which-key.nvim",    event = "VeryLazy", config = true },
 
     {
         "folke/lazydev.nvim",
@@ -270,10 +275,10 @@ require("lazy").setup({
     { "hrsh7th/cmp-buffer" },
     { "hrsh7th/cmp-path" },
     { "saadparwaiz1/cmp_luasnip" },
-    { "L3MON4D3/LuaSnip",                 version = "v2.*",   build = "make install_jsregexp" },
+    { "L3MON4D3/LuaSnip",                 version = "v2.*", build = "make install_jsregexp" },
     { "onsails/lspkind.nvim" },
     { "stevearc/conform.nvim" },
-    { "akinsho/toggleterm.nvim",          version = "*",      config = true },
+    { "akinsho/toggleterm.nvim",          version = "*",    config = true },
 
     {
         "arnamak/stay-centered.nvim",
