@@ -336,37 +336,6 @@ require("lazy").setup({
             end, { desc = "Fold: peek (fallback hover)" })
         end,
     },
-    -- Gemini AI Integration
-    {
-        "olimorris/codecompanion.nvim",
-        dependencies = {
-            "nvim-lua/plenary.nvim",
-            "nvim-treesitter/nvim-treesitter",
-        },
-        config = function()
-            require("codecompanion").setup({
-                strategies = {
-                    chat = { adapter = "gemini" },
-                    inline = { adapter = "gemini" },
-                },
-                adapters = {
-                    gemini = function()
-                        return require("codecompanion.adapters").extend("gemini", {
-                            env = {
-                                api_key = "GEMINI_API_KEY",
-                            },
-                        })
-                    end,
-                },
-                display = {
-                    chat = {
-                        show_settings = true,
-                        render_headers = false,
-                    }
-                }
-            })
-        end
-    },
 })
 
 -- telescope
@@ -666,7 +635,3 @@ vim.keymap.set("n", "<leader>gg", toggle_lazygit, { desc = "LazyGit (float)" })
 
 -- Markdown preview (markdown-preview.nvim)
 vim.keymap.set("n", "<leader>mp", "<cmd>MarkdownPreviewToggle<CR>", { desc = "Markdown: toggle preview" })
-
--- Gemini AI Remaps
-map({ "n", "v" }, "<leader>ac", "<cmd>CodeCompanionChat Toggle<CR>", { desc = "AI: Toggle Chat" })
-map({ "n", "v" }, "<leader>ai", "<cmd>CodeCompanion<CR>", { desc = "AI: Inline Action" })
