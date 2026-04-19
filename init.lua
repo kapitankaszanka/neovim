@@ -238,17 +238,13 @@ require("lazy").setup({
             })
         end
     },
+
+    -- Markdown Preview (zastępuje peek.nvim)
     {
-        "toppair/peek.nvim",
-        ft = "markdown",
-        build = "deno task --quiet build:fast",
-        opts = {
-            theme = "dark",
-            app = "browser",
-            filetype = { "markdown" },
-            throttle_at = 200000,
-            throttle_time = "auto",
-        },
+        "iamcco/markdown-preview.nvim",
+        cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
+        ft = { "markdown" },
+        build = function() vim.fn["mkdp#util#install"]() end,
     },
     {
         "nvim-treesitter/nvim-treesitter-context",
@@ -340,6 +336,37 @@ require("lazy").setup({
             end, { desc = "Fold: peek (fallback hover)" })
         end,
     },
+    -- Gemini AI Integration
+    {
+        "olimorris/codecompanion.nvim",
+        dependencies = {
+            "nvim-lua/plenary.nvim",
+            "nvim-treesitter/nvim-treesitter",
+        },
+        config = function()
+            require("codecompanion").setup({
+                strategies = {
+                    chat = { adapter = "gemini" },
+                    inline = { adapter = "gemini" },
+                },
+                adapters = {
+                    gemini = function()
+                        return require("codecompanion.adapters").extend("gemini", {
+                            env = {
+                                api_key = "GEMINI_API_KEY",
+                            },
+                        })
+                    end,
+                },
+                display = {
+                    chat = {
+                        show_settings = true,
+                        render_headers = false,
+                    }
+                }
+            })
+        end
+    },
 })
 
 -- telescope
@@ -429,6 +456,7 @@ mason_lsp.setup(
             "jsonls",
             "terraformls",
             "lua_ls",
+            "marksman",
         }
     })
 
@@ -485,6 +513,9 @@ vim.lsp.config('gopls', {
     },
 })
 vim.lsp.enable('gopls')
+
+vim.lsp.config('marksman', { capabilities = capabilities, on_attach = on_attach })
+vim.lsp.enable('marksman')
 
 vim.lsp.config('terraformls', {
     capabilities = capabilities,
@@ -633,12 +664,9 @@ end
 
 vim.keymap.set("n", "<leader>gg", toggle_lazygit, { desc = "LazyGit (float)" })
 
--- Markdown preview (peek.nvim)
-vim.keymap.set("n", "<leader>mp", function()
-    local peek = require("peek")
-    if peek.is_open() then
-        peek.close()
-    else
-        peek.open()
-    end
-end, { desc = "Markdown: toggle preview (peek)" })
+-- Markdown preview (markdown-preview.nvim)
+vim.keymap.set("n", "<leader>mp", "<cmd>MarkdownPreviewToggle<CR>", { desc = "Markdown: toggle preview" })
+
+-- Gemini AI Remaps
+map({ "n", "v" }, "<leader>ac", "<cmd>CodeCompanionChat Toggle<CR>", { desc = "AI: Toggle Chat" })
+map({ "n", "v" }, "<leader>ai", "<cmd>CodeCompanion<CR>", { desc = "AI: Inline Action" })
